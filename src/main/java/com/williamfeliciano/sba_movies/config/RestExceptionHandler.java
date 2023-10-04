@@ -22,11 +22,6 @@ public class RestExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        // Extract validation errors and return a response with error messages
-//        ErrorDto errorDto = ErrorDto.builder()
-//                .errorCode(HttpStatus.BAD_REQUEST)
-//                .message(ex.getBindingResult().getAllErrors().toString())
-//                .build();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ex.getBindingResult().getAllErrors());
     }
