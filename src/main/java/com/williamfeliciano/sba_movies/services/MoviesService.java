@@ -1,9 +1,14 @@
 package com.williamfeliciano.sba_movies.services;
 
+import com.williamfeliciano.sba_movies.dtos.CreateMovieDto;
 import com.williamfeliciano.sba_movies.dtos.MovieDetailsDto;
 import com.williamfeliciano.sba_movies.dtos.MovieDto;
+import com.williamfeliciano.sba_movies.exceptions.AppException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,7 +16,7 @@ import java.util.stream.Collectors;
 @Service
 public class MoviesService {
     // Creating MovieDto objects with real movie data
-    private final List<MovieDetailsDto> movies;
+    private List<MovieDetailsDto> movies;
 
     public MoviesService() {
         MovieDetailsDto movie1 = MovieDetailsDto.builder()
@@ -69,11 +74,13 @@ public class MoviesService {
                 .genres(List.of("Action", "Adventure", "Sci-Fi"))
                 .build();
 
-        this.movies = List.of(movie1, movie2, movie3, movie4, movie5);
+        this.movies = new ArrayList<>(Arrays.asList(movie1, movie2, movie3, movie4, movie5));
     }
-    public MoviesService(List<MovieDetailsDto> movies){
-        this.movies = movies;
+
+    public MoviesService(List<MovieDetailsDto> movies) {
+        this.movies = new ArrayList<>(movies);
     }
+
     private List<MovieDto> convertToMovieDtoList(List<MovieDetailsDto> movies) {
         return movies.stream()
                 .map(m -> MovieDto.builder()
@@ -93,7 +100,68 @@ public class MoviesService {
         return movies.stream()
                 .filter(m -> m.getId() == id)
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Movie not found."));
+                .orElseThrow(() -> new AppException("Movie not found.", HttpStatus.NOT_FOUND));
     }
 
+    public MovieDetailsDto createMovie(CreateMovieDto createMovieDto) {
+        // Verify the movie doesn't already exist
+        if (movies.stream().anyMatch(m -> m.getTitle().equals(createMovieDto.getTitle()))) {
+            throw new AppException("Movie already exists.", HttpStatus.BAD_REQUEST);
+        }
+        // Create the MovieDetailsDto object
+        MovieDetailsDto newMovie = MovieDetailsDto.builder()
+                .id(movies.size() + 1)
+                .title(createMovieDto.getTitle())
+                .description(createMovieDto.getDescription())
+                .year(createMovieDto.getYear())
+                .rating(createMovieDto.getRating())
+                .directors(createMovieDto.getDirectors())
+                .actors(createMovieDto.getActors())
+                .genres(createMovieDto.getGenres())
+                .build();
+
+        // add the new movie to the movies list
+        movies.add(newMovie);
+
+        return newMovie;
+    }
+
+    public MovieDetailsDto updateMovie(Long id, MovieDetailsDto updateMovieDto) {
+        MovieDetailsDto movie = getMovieById(id);
+
+        if(movie != null){
+            // Update the movie
+            movie.setTitle(updateMovieDto.getTitle());
+            movie.setDescription(updateMovieDto.getDescription());
+            movie.setYear(updateMovieDto.getYear());
+            movie.setRating(updateMovieDto.getRating());
+            movie.setDirectors(updateMovieDto.getDirectors());
+            movie.setActors(updateMovieDto.getActors());
+            movie.setGenres(updateMovieDto.getGenres());
+
+            // Update the movie in the list
+            movies = movies.stream().map(m -> {
+                if (m.getId() == id) {
+                    m = movie;
+                }
+                return m;
+            }).collect(Collectors.toList());
+
+            return movie;
+        }
+        return null;
+    }
+
+
+
+    public MovieDetailsDto deleteMovie(Long id) {
+        var movie = getMovieById(id);
+        if(movie != null){
+            movies.remove(movie);
+            return movie;
+        }
+        else{
+            return null;
+        }
+    }
 }
