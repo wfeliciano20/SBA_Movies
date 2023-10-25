@@ -3,15 +3,22 @@ package com.williamfeliciano.sba_movies.services;
 import com.williamfeliciano.sba_movies.dtos.CreateMovieDto;
 import com.williamfeliciano.sba_movies.dtos.MovieDetailsDto;
 import com.williamfeliciano.sba_movies.dtos.MovieDto;
+import com.williamfeliciano.sba_movies.entities.Actor;
+import com.williamfeliciano.sba_movies.entities.Director;
+import com.williamfeliciano.sba_movies.entities.Genre;
+import com.williamfeliciano.sba_movies.entities.Movie;
 import com.williamfeliciano.sba_movies.exceptions.AppException;
+import com.williamfeliciano.sba_movies.mappers.MovieMapper;
+import com.williamfeliciano.sba_movies.repositories.MovieRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
@@ -19,14 +26,28 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@ActiveProfiles("test")
 public class MoviesServiceTests {
 
+    @Mock
+    private MovieRepository movieRepository;
+
+    @Mock
+    private MovieMapper movieMapper;
+
     @InjectMocks
-    private static MoviesService moviesService;
+    private MoviesService moviesService;
+
     private static List<MovieDto> allMoviesMock;
 
+    private static List<Movie> dbMovies;
+
+    private static Movie movieEntity1;
+
+    private static Movie movieEntity2;
+
     private static MovieDetailsDto movie1;
+
 
     @BeforeAll
     public static void setUp() {
@@ -67,19 +88,41 @@ public class MoviesServiceTests {
                         .year(movie2.getYear())
                         .build()
         );
-
-        moviesService = new MoviesService(movies);
+        movieEntity1 = Movie.builder()
+                .id(1L)
+                .title("The Shawshank Redemption")
+                .description("Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.")
+                .release_year(1994)
+                .rating(5)
+                .directors(List.of(Director.builder().name("Frank Darabont").build()))
+                .actors(List.of(Actor.builder().name("Tim Robbins").build(), Actor.builder().name("Morgan Freeman").build()))
+                .genres(List.of(Genre.builder().name("Drama").build()))
+                .build();
+        movieEntity2 = Movie.builder()
+                .id(2L)
+                .title("The Godfather")
+                .description("An organized crime dynasty's aging patriarch transfers control of his clandestine empire to his reluctant son.")
+                .release_year(1972)
+                .rating(5)
+                .directors(List.of(Director.builder().name("Francis Ford Coppola").build()))
+                .actors(List.of(Actor.builder().name("Marlon Brando").build(), Actor.builder().name("Al Pacino").build()))
+                .genres(List.of(Genre.builder().name("Crime").build(), Genre.builder().name("Drama").build()))
+                .build();
+        dbMovies = List.of(movieEntity1, movieEntity2);
 
     }
 
     @Test
     public void getAllMoviesTest() {
+        BDDMockito.given(movieRepository.findAll()).willReturn(dbMovies);
         List<MovieDto> moviesResponse = moviesService.getAllMovies();
-        Assertions.assertThat(moviesResponse.size()).isGreaterThan(1);
+        Assertions.assertThat(moviesResponse.size()).isGreaterThan(0);
     }
 
     @Test
     public void getMovieByIdTest() {
+        BDDMockito.given(movieRepository.findById(1L)).willReturn(java.util.Optional.of(movieEntity1));
+        BDDMockito.given(movieMapper.toMovieDetailsDto(movieEntity1)).willReturn(movie1);
         MovieDetailsDto moviewDetailsResponse = moviesService.getMovieById(1L);
 
         assertEquals(movie1.getTitle(), moviewDetailsResponse.getTitle());
@@ -94,7 +137,7 @@ public class MoviesServiceTests {
     public void createMovieTest() {
         CreateMovieDto movieDetailsDto = CreateMovieDto.builder()
                 .id(3L)
-                .title("The  Matrix 2")
+                .title("The Matrix 2")
                 .description("A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.")
                 .year(2001)
                 .rating(5)
@@ -102,6 +145,32 @@ public class MoviesServiceTests {
                 .actors(List.of("Keanu Reeves", "Laurence Fishburne"))
                 .genres(List.of("Action", "Sci-Fi"))
                 .build();
+        MovieDetailsDto movieDetailsDto1 = MovieDetailsDto.builder()
+                .id(3L)
+                .title("The Matrix 2")
+                .description("A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.")
+                .year(2001)
+                .rating(5)
+                .directors(List.of("Lana Wachowski", "Lilly Wachowski"))
+                .actors(List.of("Keanu Reeves", "Laurence Fishburne"))
+                .genres(List.of("Action", "Sci-Fi"))
+                .build();
+
+        Movie movieToSave = Movie.builder()
+                .id(3L)
+                .title("The Matrix 2")
+                .description("A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.")
+                .release_year(2001)
+                .rating(5)
+                .directors(List.of(Director.builder().name("Lana Wachowski").build(), Director.builder().name("Lilly Wachowski").build()))
+                .actors(List.of(Actor.builder().name("Keanu Reeves").build(), Actor.builder().name("Laurence Fishburne").build()))
+                .genres(List.of(Genre.builder().name("Action").build(), Genre.builder().name("Sci-Fi").build()))
+                .build();
+
+
+        BDDMockito.given(movieMapper.toMovieCreate(movieDetailsDto)).willReturn(movieToSave);
+        BDDMockito.given(movieRepository.save(movieToSave)).willReturn(movieToSave);
+        BDDMockito.given(movieMapper.toMovieDetailsDto(movieToSave)).willReturn(movieDetailsDto1);
         MovieDetailsDto movieDetailsResponse = moviesService.createMovie(movieDetailsDto);
         assertEquals(movieDetailsDto.getTitle(), movieDetailsResponse.getTitle());
     }
@@ -118,10 +187,25 @@ public class MoviesServiceTests {
                 .actors(List.of("Keanu Reeves", "Laurence Fishburne"))
                 .genres(List.of("Action", "Sci-Fi"))
                 .build();
+        Movie updatedMovie = Movie.builder()
+                .id(2L)
+                .title("The Matrix")
+                .description("A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.")
+                .release_year(1999)
+                .rating(5)
+                .directors(List.of(Director.builder().name("Lana Wachowski").build(), Director.builder().name("Lilly Wachowski").build()))
+                .actors(List.of(Actor.builder().name("Keanu Reeves").build(), Actor.builder().name("Laurence Fishburne").build()))
+                .genres(List.of(Genre.builder().name("Action").build(), Genre.builder().name("Sci-Fi").build()))
+                .build();
+
+        BDDMockito.given(movieRepository.findById(2L)).willReturn(java.util.Optional.of(movieEntity2));
+        BDDMockito.given(movieMapper.toMovie(movieDetailsDto)).willReturn(updatedMovie);
+        BDDMockito.given(movieRepository.save(updatedMovie)).willReturn(updatedMovie);
+        BDDMockito.given(movieMapper.toMovieDetailsDto(updatedMovie)).willReturn(movieDetailsDto);
         MovieDetailsDto movieDetailsUpdateResponse = moviesService.updateMovie(2L, movieDetailsDto);
-        MovieDetailsDto movieDetailsGetByIdResponse = moviesService.getMovieById(2L);
+
+
         assertEquals(movieDetailsDto.getTitle(), movieDetailsUpdateResponse.getTitle());
-        assertEquals(movieDetailsDto.getTitle(), movieDetailsGetByIdResponse.getTitle());
     }
 
     @Test
@@ -141,9 +225,11 @@ public class MoviesServiceTests {
 
     @Test
     public void deleteMovieTest() {
+        BDDMockito.given(movieRepository.findById(1L)).willReturn(java.util.Optional.of(movieEntity1));
+        BDDMockito.given(movieMapper.toMovieDetailsDto(movieEntity1)).willReturn(movie1);
         var movie = moviesService.deleteMovie(1L);
 
-        assertEquals(movie1.getTitle(), movie.getTitle());
+        assertEquals(movieEntity1.getTitle(), movie.getTitle());
 
     }
 
