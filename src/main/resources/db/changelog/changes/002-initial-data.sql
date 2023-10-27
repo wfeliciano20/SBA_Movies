@@ -1,3 +1,6 @@
+--liquibase formatted sql
+--changeset wfeliciano20:002 splitStatements:true endDelimiter:;
+
 -- Insert sample directors if they don't already exist
 INSERT INTO directors (name)
 SELECT name
@@ -7,6 +10,9 @@ FROM (VALUES
           ('Pete Docter')
      ) AS new_directors(name)
 WHERE name NOT IN (SELECT name FROM directors);
+
+-- rollback DELETE FROM movie_directors WHERE movie_id IN (SELECT id FROM movies WHERE title IN ('The Matrix', 'The Dark Knight', 'Up'));
+
 
 -- Insert sample actors if they don't already exist
 INSERT INTO actors (name)
@@ -21,6 +27,8 @@ FROM (VALUES
      ) AS new_actors(name)
 WHERE name NOT IN (SELECT name FROM actors);
 
+-- rollback  DELETE FROM movie_actors WHERE movie_id IN (SELECT id FROM movies WHERE title IN ('The Matrix', 'The Dark Knight', 'Up'))
+
 -- Insert sample genres if they don't already exist
 INSERT INTO genres (name)
 SELECT name
@@ -33,6 +41,8 @@ FROM (VALUES
      ) AS new_genres(name)
 WHERE name NOT IN (SELECT name FROM genres);
 
+-- rollback DELETE FROM movie_genres WHERE movie_id IN (SELECT id FROM movies WHERE title IN ('The Matrix', 'The Dark Knight', 'Up'));
+
 -- Insert sample movies if they don't already exist
 INSERT INTO movies (title, description, release_year, rating, created, updated)
 SELECT title, description, release_year, rating, NOW(), NOW()
@@ -43,6 +53,7 @@ FROM (VALUES
      ) AS new_movies(title, description, release_year, rating)
 WHERE title NOT IN (SELECT title FROM movies);
 
+-- rollback DELETE FROM movies WHERE title IN ('The Matrix', 'The Dark Knight', 'Up')
 
 
 -- Link movies with directors, but insert only if the relationship doesn't already exist
@@ -54,6 +65,8 @@ FROM (VALUES
           (3, 3)  -- Up - Pete Docter
      ) AS new_movie_directors(movie_id, director_id)
 WHERE (movie_id, director_id) NOT IN (SELECT movie_id, director_id FROM movie_directors);
+
+-- rollback DELETE FROM movie_directors WHERE movie_id IN (SELECT id FROM movies WHERE title IN ('The Matrix', 'The Dark Knight', 'Up'));
 
 -- Link movies with actors, but insert only if the relationship doesn't already exist
 INSERT INTO movie_actors (movie_id, actor_id)
@@ -68,6 +81,8 @@ FROM (VALUES
      ) AS new_movie_actors(movie_id, actor_id)
 WHERE (movie_id, actor_id) NOT IN (SELECT movie_id, actor_id FROM movie_actors);
 
+-- rollback DELETE FROM movie_actors WHERE movie_id IN (SELECT id FROM movies WHERE title IN ('The Matrix', 'The Dark Knight', 'Up'));
+
 -- Link movies with genres, but insert only if the relationship doesn't already exist
 INSERT INTO movie_genres (movie_id, genre_id)
 SELECT movie_id, genre_id
@@ -79,3 +94,5 @@ FROM (VALUES
           (3, 4)  -- Up - Animation
      ) AS new_movie_genres(movie_id, genre_id)
 WHERE (movie_id, genre_id) NOT IN (SELECT movie_id, genre_id FROM movie_genres);
+
+-- rollback DELETE FROM movie_genres WHERE movie_id IN (SELECT id FROM movies WHERE title IN ('The Matrix', 'The Dark Knight', 'Up'))

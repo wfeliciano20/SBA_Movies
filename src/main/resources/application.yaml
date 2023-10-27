@@ -1,7 +1,6 @@
 spring:
-  sql:
-    init:
-      mode: always
+  liquibase:
+    change-log: db/changelog/db.changelog-master.yaml
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5434/movie_db
@@ -11,4 +10,3 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
-    hibernate.ddl-auto: validate
