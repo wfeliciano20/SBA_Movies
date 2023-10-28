@@ -1,0 +1,7 @@
+databaseChangeLog:
+  - changeSet:
+        id: 1
+        author: wfeliciano20
+
+  - includeAll:
+        path: classpath:/db/changelog/changes
