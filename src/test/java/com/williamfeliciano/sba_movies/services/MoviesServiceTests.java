@@ -3,6 +3,7 @@ package com.williamfeliciano.sba_movies.services;
 import com.williamfeliciano.sba_movies.dtos.CreateMovieDto;
 import com.williamfeliciano.sba_movies.dtos.MovieDetailsDto;
 import com.williamfeliciano.sba_movies.dtos.MovieDto;
+import com.williamfeliciano.sba_movies.dtos.SearchRequestDto;
 import com.williamfeliciano.sba_movies.entities.Actor;
 import com.williamfeliciano.sba_movies.entities.Director;
 import com.williamfeliciano.sba_movies.entities.Genre;
@@ -21,6 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -29,25 +31,18 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @ActiveProfiles("test")
 public class MoviesServiceTests {
 
+    private static List<MovieDto> allMoviesMock;
+    private static List<Movie> dbMovies;
+    private static Movie movieEntity1;
+    private static Movie movieEntity2;
+    private static Movie movieMatrix;
+    private static MovieDetailsDto movie1;
     @Mock
     private MovieRepository movieRepository;
-
     @Mock
     private MovieMapper movieMapper;
-
     @InjectMocks
     private MoviesService moviesService;
-
-    private static List<MovieDto> allMoviesMock;
-
-    private static List<Movie> dbMovies;
-
-    private static Movie movieEntity1;
-
-    private static Movie movieEntity2;
-
-    private static MovieDetailsDto movie1;
-
 
     @BeforeAll
     public static void setUp() {
@@ -109,7 +104,15 @@ public class MoviesServiceTests {
                 .genres(List.of(Genre.builder().name("Crime").build(), Genre.builder().name("Drama").build()))
                 .build();
         dbMovies = List.of(movieEntity1, movieEntity2);
-
+        movieMatrix = Movie.builder()
+                .title("The Matrix")
+                .description("A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.")
+                .release_year(1999)
+                .rating(5)
+                .directors(List.of(Director.builder().name("Lana Wachowski").build()))
+                .actors(List.of(Actor.builder().name("Keanu Reeves").build(), Actor.builder().name("Laurence Fishburne").build(), Actor.builder().name("Carrie-Anne Moss").build()))
+                .genres(List.of(Genre.builder().name("Action").build(), Genre.builder().name("Sci-Fi").build()))
+                .build();
     }
 
     @Test
@@ -239,4 +242,49 @@ public class MoviesServiceTests {
     }
 
 
+    @Test
+    public void searchMovieByActorTest() {
+        SearchRequestDto search = SearchRequestDto.builder().firstName("keanu").build();
+        MovieDetailsDto mov = MovieDetailsDto.builder()
+                .title("The Matrix")
+                .description("A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.")
+                .year(1999)
+                .rating(5)
+                .actors(List.of("Keanu Reeves", "Laurence Fishburne", "Carrie-Anne Moss"))
+                .directors(List.of("Lana Wachowski"))
+                .genres(List.of("Action", "Sci-Fi"))
+                .build();
+        BDDMockito.given(movieRepository.findByActorsIsContainingIgnoreCaseAndDirectorsIsContainingIgnoreCase(search.getFirstName())).willReturn(Optional.of(movieMatrix));
+        BDDMockito.given(movieMapper.toMovieDetailsDto(movieMatrix)).willReturn(mov);
+        MovieDetailsDto dbMovie = moviesService.searchMovie(search);
+
+        Assertions.assertThat(movieMatrix.getTitle()).isEqualTo(dbMovie.getTitle());
+        Assertions.assertThat(movieMatrix.getActors().size()).isEqualTo(dbMovie.getActors().size());
+    }
+
+    @Test
+    public void searchMovieByDirectorTest() {
+        SearchRequestDto search = SearchRequestDto.builder().firstName("lana").build();
+        MovieDetailsDto mov = MovieDetailsDto.builder()
+                .title("The Matrix")
+                .description("A computer hacker learns from mysterious rebels about the true nature of his reality and his role in the war against its controllers.")
+                .year(1999)
+                .rating(5)
+                .actors(List.of("Keanu Reeves", "Laurence Fishburne", "Carrie-Anne Moss"))
+                .directors(List.of("Lana Wachowski"))
+                .genres(List.of("Action", "Sci-Fi"))
+                .build();
+        BDDMockito.given(movieRepository.findByActorsIsContainingIgnoreCaseAndDirectorsIsContainingIgnoreCase(search.getFirstName())).willReturn(Optional.of(movieMatrix));
+        BDDMockito.given(movieMapper.toMovieDetailsDto(movieMatrix)).willReturn(mov);
+        MovieDetailsDto dbMovie = moviesService.searchMovie(search);
+
+        Assertions.assertThat(movieMatrix.getTitle()).isEqualTo(dbMovie.getTitle());
+        Assertions.assertThat(movieMatrix.getActors().size()).isEqualTo(dbMovie.getActors().size());
+    }
+
+    @Test
+    public void searchMovieThrowsTest() {
+        SearchRequestDto search = SearchRequestDto.builder().firstName("Gary").build();
+        assertThrows(AppException.class, () -> moviesService.searchMovie(search));
+    }
 }

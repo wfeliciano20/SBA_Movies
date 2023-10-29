@@ -8,15 +8,22 @@ CREATE TABLE IF NOT EXISTS movies (
                                       created TIMESTAMP,
                                       updated TIMESTAMP
 );
+ALTER TABLE directors
+    ADD COLUMN birth_year INTEGER,
+    ADD COLUMN country VARCHAR(255);
 
 CREATE TABLE IF NOT EXISTS directors (
                                          id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                         name VARCHAR(255) NOT NULL
+                                         name VARCHAR(255) NOT NULL,
+                                         birth_year INTEGER NOT NULL,
+                                         country VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS actors (
                                       id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                      name VARCHAR(255) NOT NULL
+                                      name VARCHAR(255) NOT NULL,
+                                      birth_year INTEGER NOT NULL,
+                                      country VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS genres (

@@ -3,6 +3,7 @@ package com.williamfeliciano.sba_movies.services;
 import com.williamfeliciano.sba_movies.dtos.CreateMovieDto;
 import com.williamfeliciano.sba_movies.dtos.MovieDetailsDto;
 import com.williamfeliciano.sba_movies.dtos.MovieDto;
+import com.williamfeliciano.sba_movies.dtos.SearchRequestDto;
 import com.williamfeliciano.sba_movies.entities.Movie;
 import com.williamfeliciano.sba_movies.exceptions.AppException;
 import com.williamfeliciano.sba_movies.mappers.MovieMapper;
@@ -24,7 +25,7 @@ public class MoviesService {
 
 
     public List<MovieDto> getAllMovies() {
-        List<MovieDto> movies = new ArrayList<MovieDto>();
+        List<MovieDto> movies = new ArrayList<>();
         movieRepository.findAll().forEach(movie -> movies.add(movieMapper.toMovieDtoFromMovie(movie)));
         return movies;
     }
@@ -71,5 +72,11 @@ public class MoviesService {
             return movieMapper.toMovieDetailsDto(dbMovie);
         }
         return null;
+    }
+
+    public MovieDetailsDto searchMovie(SearchRequestDto searchParam){
+        Movie movie = movieRepository.findByActorsIsContainingIgnoreCaseAndDirectorsIsContainingIgnoreCase(searchParam.getFirstName())
+                .orElseThrow(() -> new AppException("Movie not found.", HttpStatus.NOT_FOUND));
+        return movieMapper.toMovieDetailsDto(movie);
     }
 }

@@ -1,6 +1,8 @@
 package com.williamfeliciano.sba_movies.mappers;
 
+import com.williamfeliciano.sba_movies.dtos.ActorNameDto;
 import com.williamfeliciano.sba_movies.dtos.CreateMovieDto;
+import com.williamfeliciano.sba_movies.dtos.DirectorNameDto;
 import com.williamfeliciano.sba_movies.dtos.MovieDetailsDto;
 import com.williamfeliciano.sba_movies.dtos.MovieDto;
 import com.williamfeliciano.sba_movies.entities.Actor;
@@ -34,6 +36,8 @@ public interface MovieMapper {
 
     String  toActorString(Actor actor);
 
+    ActorNameDto toActorNameDto(Actor actor);
+
     Actor toActor(String actor);
 
     List<Actor> toActorList(List<String> actors);
@@ -49,6 +53,8 @@ public interface MovieMapper {
     List<String> toDirectors(List<Director> directors);
 
     String toDirectorString(Director director);
+
+    DirectorNameDto toDirectorNameDto(Director director);
 
     Director toDirector(String director);
 
