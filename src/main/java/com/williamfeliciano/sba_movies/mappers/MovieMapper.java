@@ -9,11 +9,11 @@ import com.williamfeliciano.sba_movies.entities.Genre;
 import com.williamfeliciano.sba_movies.entities.Movie;
 import org.mapstruct.Mapper;
 
+
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring",unmappedTargetPolicy = org.mapstruct.ReportingPolicy.IGNORE)
 public interface MovieMapper {
-
     Movie toMovie(MovieDetailsDto movieDetailsDto);
 
     Movie toMovieCreate(CreateMovieDto movieDto);
@@ -53,4 +53,6 @@ public interface MovieMapper {
     Director toDirector(String director);
 
     List<Director> toDirectorList(List<String> directors);
+
+
 }

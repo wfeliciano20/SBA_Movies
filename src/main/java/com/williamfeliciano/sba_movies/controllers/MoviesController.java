@@ -3,6 +3,7 @@ package com.williamfeliciano.sba_movies.controllers;
 import com.williamfeliciano.sba_movies.dtos.CreateMovieDto;
 import com.williamfeliciano.sba_movies.dtos.MovieDetailsDto;
 import com.williamfeliciano.sba_movies.dtos.MovieDto;
+import com.williamfeliciano.sba_movies.dtos.SearchRequestDto;
 import com.williamfeliciano.sba_movies.services.MoviesService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -49,5 +50,10 @@ public class MoviesController {
     public ResponseEntity<MovieDetailsDto> deleteMovie(@PathVariable Long id){
         var movie = moviesService.deleteMovie(id);
         return ResponseEntity.ok(movie);
+    }
+
+    @PostMapping("/movies/search")
+    public ResponseEntity<MovieDetailsDto> searchMovie(@RequestBody SearchRequestDto searchParam){
+        return ResponseEntity.ok(moviesService.searchMovie(searchParam));
     }
 }

@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS movies;
 CREATE TABLE IF NOT EXISTS movies (
                                       id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                       title VARCHAR(255) NOT NULL UNIQUE,
@@ -9,15 +8,23 @@ CREATE TABLE IF NOT EXISTS movies (
                                       updated TIMESTAMP
 );
 
+
 CREATE TABLE IF NOT EXISTS directors (
                                          id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                          name VARCHAR(255) NOT NULL
 );
 
+
+-- ALTER TABLE directors ADD COLUMN birth_year INTEGER;
+-- ALTER TABLE directors ADD COLUMN country VARCHAR(255);
+
 CREATE TABLE IF NOT EXISTS actors (
                                       id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                       name VARCHAR(255) NOT NULL
 );
+
+-- ALTER TABLE actors ADD COLUMN birth_year INTEGER;
+-- ALTER TABLE actors ADD COLUMN country VARCHAR(255);
 
 CREATE TABLE IF NOT EXISTS genres (
                                       id BIGINT AUTO_INCREMENT PRIMARY KEY,

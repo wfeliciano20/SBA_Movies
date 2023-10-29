@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @ActiveProfiles("test")
-public class MovieRepositoryTests {
+public class MovieRepositoryTest {
 
     @Autowired
     private MovieRepository movieRepository;
