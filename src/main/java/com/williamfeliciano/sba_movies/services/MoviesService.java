@@ -37,7 +37,7 @@ public class MoviesService {
 
     public MovieDetailsDto createMovie(CreateMovieDto createMovieDto) {
         // Verify the movie doesn't already exist
-        if (movieRepository.findByTitle(createMovieDto.getTitle()).isPresent()){
+        if (movieRepository.findByTitle(createMovieDto.getTitle()).isPresent()) {
             throw new AppException("Movie already exists.", HttpStatus.BAD_REQUEST);
         }
         // Save the movie to the database
@@ -47,11 +47,11 @@ public class MoviesService {
     }
 
     public MovieDetailsDto updateMovie(Long id, MovieDetailsDto updateMovieDto) {
-       // Get the movie from db
+        // Get the movie from db
         Movie dbMovie = movieRepository.findById(id)
                 .orElseThrow(() -> new AppException("Movie not found.", HttpStatus.NOT_FOUND));
 
-        if(dbMovie != null){
+        if (dbMovie != null) {
             // Update the movie
             dbMovie = movieMapper.toMovie(updateMovieDto);
             // Save the movie to the database
@@ -66,14 +66,14 @@ public class MoviesService {
         // Get the movie from db
         Movie dbMovie = movieRepository.findById(id)
                 .orElseThrow(() -> new AppException("Movie not found.", HttpStatus.NOT_FOUND));
-        if(dbMovie != null){
+        if (dbMovie != null) {
             movieRepository.delete(dbMovie);
             return movieMapper.toMovieDetailsDto(dbMovie);
         }
         return null;
     }
 
-    public MovieDetailsDto searchMovie(SearchRequestDto searchParam){
+    public MovieDetailsDto searchMovie(SearchRequestDto searchParam) {
         Movie movie = movieRepository.findFirstByActorsNameIgnoreCaseOrDirectorsNameIgnoreCase(searchParam.getName(), searchParam.getName())
                 .orElseThrow(() -> new AppException("Movie not found.", HttpStatus.NOT_FOUND));
         return movieMapper.toMovieDetailsDto(movie);

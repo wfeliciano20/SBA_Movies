@@ -1,3 +1,10 @@
+drop table movie_genres;
+drop table movie_actors;
+drop table movie_directors;
+drop table genres;
+drop table actors;
+drop table directors;
+drop table movies;
 CREATE TABLE IF NOT EXISTS movies (
                                       id BIGINT AUTO_INCREMENT PRIMARY KEY,
                                       title VARCHAR(255) NOT NULL UNIQUE,
@@ -11,7 +18,9 @@ CREATE TABLE IF NOT EXISTS movies (
 
 CREATE TABLE IF NOT EXISTS directors (
                                          id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                         name VARCHAR(255) NOT NULL
+                                         name VARCHAR(255) NOT NULL,
+                                         birth_year INTEGER,
+                                         country VARCHAR(255)
 );
 
 
@@ -20,7 +29,9 @@ CREATE TABLE IF NOT EXISTS directors (
 
 CREATE TABLE IF NOT EXISTS actors (
                                       id BIGINT AUTO_INCREMENT PRIMARY KEY,
-                                      name VARCHAR(255) NOT NULL
+                                      name VARCHAR(255) NOT NULL,
+                                      birth_year INTEGER,
+                                      country VARCHAR(255)
 );
 
 -- ALTER TABLE actors ADD COLUMN birth_year INTEGER;

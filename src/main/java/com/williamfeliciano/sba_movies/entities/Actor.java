@@ -2,12 +2,9 @@ package com.williamfeliciano.sba_movies.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -29,16 +26,17 @@ public class Actor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name="name",unique = true, nullable = false)
+    @Column(name = "name", unique = true, nullable = false)
     private String name;
 
     @ManyToMany(mappedBy = "actors")
     private List<Movie> movies;
 
-    @Column(name="birth_year")
-    private int birthYear=0;
+    @Column(name = "birth_year")
+    @Builder.Default
+    private Integer birthYear = 0;
 
-    @Column(name="country")
+    @Column(name = "country")
     private String country;
 
 }

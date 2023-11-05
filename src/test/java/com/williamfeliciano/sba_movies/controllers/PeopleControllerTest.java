@@ -117,7 +117,7 @@ public class PeopleControllerTest {
         var id = 1L;
         var personType = "invalid";
         BDDMockito.given(peopleService.getPersonById(id,personType)).willThrow(new AppException("Invalid PersonType.", HttpStatus.BAD_REQUEST));
-        mockMvc.perform(MockMvcRequestBuilders.get("/people/invalid/999")
+        mockMvc.perform(MockMvcRequestBuilders.get("/people/invalid/1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("Invalid PersonType."));

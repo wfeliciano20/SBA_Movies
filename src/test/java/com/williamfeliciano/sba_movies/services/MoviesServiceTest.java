@@ -254,7 +254,7 @@ public class MoviesServiceTest {
                 .directors(List.of("Lana Wachowski"))
                 .genres(List.of("Action", "Sci-Fi"))
                 .build();
-        BDDMockito.given(movieRepository.findFirstByActorsNameIgnoreCaseOrDirectorsNameIgnoreCase(search.getName(),search.getName())).willReturn(Optional.of(movieMatrix));
+        BDDMockito.given(movieRepository.findFirstByActorsNameIgnoreCaseOrDirectorsNameIgnoreCase(search.getName(), search.getName())).willReturn(Optional.of(movieMatrix));
         BDDMockito.given(movieMapper.toMovieDetailsDto(movieMatrix)).willReturn(mov);
         MovieDetailsDto dbMovie = moviesService.searchMovie(search);
 
@@ -274,7 +274,7 @@ public class MoviesServiceTest {
                 .directors(List.of("Lana Wachowski"))
                 .genres(List.of("Action", "Sci-Fi"))
                 .build();
-        BDDMockito.given(movieRepository.findFirstByActorsNameIgnoreCaseOrDirectorsNameIgnoreCase(search.getName(),search.getName())).willReturn(Optional.of(movieMatrix));
+        BDDMockito.given(movieRepository.findFirstByActorsNameIgnoreCaseOrDirectorsNameIgnoreCase(search.getName(), search.getName())).willReturn(Optional.of(movieMatrix));
         BDDMockito.given(movieMapper.toMovieDetailsDto(movieMatrix)).willReturn(mov);
         MovieDetailsDto dbMovie = moviesService.searchMovie(search);
 

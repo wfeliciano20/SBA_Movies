@@ -42,7 +42,7 @@ public class PeopleService {
             return PersonDetailsDto.builder()
                     .id(actor.getId())
                     .name(actor.getName())
-                    .birthYear(actor.getBirthYear())
+                    .birthYear(actor.getBirthYear() == null? 0:actor.getBirthYear())
                     .country(actor.getCountry())
                     .genres(genres)
                     .build();
@@ -55,7 +55,7 @@ public class PeopleService {
             return PersonDetailsDto.builder()
                     .id(director.getId())
                     .name(director.getName())
-                    .birthYear(director.getBirthYear())
+                    .birthYear(director.getBirthYear() == null? 0:director.getBirthYear())
                     .country(director.getCountry())
                     .genres(genres)
                     .build();
