@@ -1,4 +1,3 @@
--- Insert sample directors
 INSERT INTO directors (name) VALUES
                                  ('Lana Wachowski'),
                                  ('Christopher Nolan'),
@@ -24,9 +23,9 @@ INSERT INTO genres (name) VALUES
 -- Insert sample movies
 INSERT INTO movies (title, description, release_year, rating, created, updated) VALUES
 
-                                                                            ('The Matrix', 'A computer hacker learns about the true nature of his reality and his role in the war against its controllers.', 1999, 4, NOW(), NOW()),
-                                                                            ('The Dark Knight', 'When the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.', 2008, 5, NOW(), NOW()),
-                                                                            ('Up', 'Seventy-eight-year-old Carl sets out to fulfill his lifelong dream to see the wilds of South America.', 2009, 4, NOW(), NOW());
+                                                                                    ('The Matrix', 'A computer hacker learns about the true nature of his reality and his role in the war against its controllers.', 1999, 4, NOW(), NOW()),
+                                                                                    ('The Dark Knight', 'When the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one of the greatest psychological and physical tests of his ability to fight injustice.', 2008, 5, NOW(), NOW()),
+                                                                                    ('Up', 'Seventy-eight-year-old Carl sets out to fulfill his lifelong dream to see the wilds of South America.', 2009, 4, NOW(), NOW());
 
 -- Link movies with directors, actors, and genres
 -- You can customize these links according to your requirements

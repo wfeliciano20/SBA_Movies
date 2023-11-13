@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS movies (
                                       updated TIMESTAMP
 );
 
--- rollback drop table movies;
+-- rollback drop table if exists movies cascade;
 
 
 CREATE TABLE IF NOT EXISTS directors (
@@ -19,21 +19,21 @@ CREATE TABLE IF NOT EXISTS directors (
                                          name VARCHAR(255) NOT NULL
 );
 
--- rollback drop table directors;
+-- rollback drop table if exists directors;
 
 CREATE TABLE IF NOT EXISTS actors (
                                       id BIGSERIAL PRIMARY KEY,
                                       name VARCHAR(255) NOT NULL
 );
 
--- rollback drop table actors;
+-- rollback drop table if exists actors;
 
 CREATE TABLE IF NOT EXISTS genres (
                                       id BIGSERIAL PRIMARY KEY,
                                       name VARCHAR(255) NOT NULL
 );
 
--- rollback drop table genres;
+-- rollback drop table if exists genres;
 
 CREATE TABLE IF NOT EXISTS movie_directors (
                                                movie_id BIGINT,
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS movie_directors (
                                                FOREIGN KEY (director_id) REFERENCES directors (id)
 );
 
--- rollback drop table movie_directors
+-- rollback drop table if exists movie_directors cascade;
 
 CREATE TABLE IF NOT EXISTS movie_actors (
                                             movie_id BIGINT,
@@ -51,7 +51,7 @@ CREATE TABLE IF NOT EXISTS movie_actors (
                                             FOREIGN KEY (actor_id) REFERENCES actors (id)
 );
 
--- rollback drop table movie_actors;
+-- rollback drop table if exists movie_actors cascade;
 
 CREATE TABLE IF NOT EXISTS movie_genres (
                                             movie_id BIGINT,
@@ -60,6 +60,6 @@ CREATE TABLE IF NOT EXISTS movie_genres (
                                             FOREIGN KEY (genre_id) REFERENCES genres (id)
 );
 
--- rollback drop table movie_genres;
+-- rollback drop table if exists movie_genres cascade;
 
 

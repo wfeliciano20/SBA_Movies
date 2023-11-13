@@ -8,4 +8,6 @@ import java.util.Optional;
 public interface MovieRepository extends JpaRepository<Movie, Long> {
 
     Optional<Movie> findByTitle(String title);
+
+    Optional<Movie> findFirstByActorsNameIgnoreCaseOrDirectorsNameIgnoreCase(String searchTerm, String searchTerm2);
 }

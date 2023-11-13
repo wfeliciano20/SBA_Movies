@@ -26,9 +26,17 @@ public class Actor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name="name",unique = true, nullable = false)
+    @Column(name = "name", unique = true, nullable = false)
     private String name;
 
     @ManyToMany(mappedBy = "actors")
     private List<Movie> movies;
+
+    @Column(name = "birth_year")
+    @Builder.Default
+    private Integer birthYear = 0;
+
+    @Column(name = "country")
+    private String country;
+
 }

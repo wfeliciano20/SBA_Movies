@@ -4,6 +4,7 @@ import com.williamfeliciano.sba_movies.entities.Movie;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
@@ -12,8 +13,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 
 @DataJpaTest
+@EnableJpaRepositories(basePackages = "com.williamfeliciano.sba_movies.repositories")
 @ActiveProfiles("test")
-public class MovieRepositoryTests {
+public class MovieRepositoryTest {
 
     @Autowired
     private MovieRepository movieRepository;

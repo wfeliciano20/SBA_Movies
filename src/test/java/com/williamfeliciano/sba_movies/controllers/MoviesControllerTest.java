@@ -6,10 +6,12 @@ import com.williamfeliciano.sba_movies.config.RestExceptionHandler;
 import com.williamfeliciano.sba_movies.dtos.CreateMovieDto;
 import com.williamfeliciano.sba_movies.dtos.MovieDetailsDto;
 import com.williamfeliciano.sba_movies.dtos.MovieDto;
+import com.williamfeliciano.sba_movies.dtos.SearchRequestDto;
 import com.williamfeliciano.sba_movies.exceptions.AppException;
 import com.williamfeliciano.sba_movies.services.MoviesService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -17,6 +19,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -32,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(MoviesController.class)
 @Import({AopAutoConfiguration.class, RestExceptionHandler.class})
+@ActiveProfiles("test")
 public class MoviesControllerTest {
 
     private static MovieDetailsDto mockMovie1;
@@ -208,6 +212,53 @@ public class MoviesControllerTest {
         given(moviesService.deleteMovie(5L)).willThrow(new AppException("Movie not found", HttpStatus.NOT_FOUND));
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/movies/5"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Movie not found"));
+    }
+
+
+    @Test
+    public void givenAValidActorName_whenSearchMovie_thenReturnsOk() throws Exception {
+        var search = SearchRequestDto.builder()
+                .name("Actor1")
+                .build();
+        // given precondition
+        given(moviesService.searchMovie(search)).willReturn(mockMovie1);
+        // when action or behaviour
+        mockMvc.perform(MockMvcRequestBuilders.post("/movies/search")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(search)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value(mockMovie1.getTitle()));
+    }
+
+
+    @Test
+    public void givenAValidDirectorName_whenSearchMovie_thenReturnsOk() throws Exception {
+        var search = SearchRequestDto.builder()
+                .name("Director1")
+                .build();
+        // given precondition
+        given(moviesService.searchMovie(search)).willReturn(mockMovie1);
+        // when action or behaviour
+        mockMvc.perform(MockMvcRequestBuilders.post("/movies/search")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(search)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value(mockMovie1.getTitle()));
+    }
+
+    @Test
+    public void givenAnInValidActorName_whenSearchMovie_thenThrows() throws Exception {
+        var search = SearchRequestDto.builder()
+                .name("Gary")
+                .build();
+        // given precondition
+        BDDMockito.given(moviesService.searchMovie(search)).willThrow(new AppException("Movie not found", HttpStatus.NOT_FOUND));
+        // when action or behaviour
+        mockMvc.perform(MockMvcRequestBuilders.post("/movies/search")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(search)))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message").value("Movie not found"));
     }

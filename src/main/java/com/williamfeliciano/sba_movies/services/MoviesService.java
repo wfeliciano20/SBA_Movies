@@ -3,6 +3,7 @@ package com.williamfeliciano.sba_movies.services;
 import com.williamfeliciano.sba_movies.dtos.CreateMovieDto;
 import com.williamfeliciano.sba_movies.dtos.MovieDetailsDto;
 import com.williamfeliciano.sba_movies.dtos.MovieDto;
+import com.williamfeliciano.sba_movies.dtos.SearchRequestDto;
 import com.williamfeliciano.sba_movies.entities.Movie;
 import com.williamfeliciano.sba_movies.exceptions.AppException;
 import com.williamfeliciano.sba_movies.mappers.MovieMapper;
@@ -24,9 +25,8 @@ public class MoviesService {
 
 
     public List<MovieDto> getAllMovies() {
-        List<MovieDto> movies = new ArrayList<MovieDto>();
-        movieRepository.findAll().forEach(movie -> movies.add(movieMapper.toMovieDtoFromMovie(movie)));
-        return movies;
+        List<MovieDto> movies = new ArrayList<>();
+        return movieRepository.findAll().stream().map(movieMapper::toMovieDtoFromMovie).toList();
     }
 
     public MovieDetailsDto getMovieById(long id) {
@@ -37,7 +37,7 @@ public class MoviesService {
 
     public MovieDetailsDto createMovie(CreateMovieDto createMovieDto) {
         // Verify the movie doesn't already exist
-        if (movieRepository.findByTitle(createMovieDto.getTitle()).isPresent()){
+        if (movieRepository.findByTitle(createMovieDto.getTitle()).isPresent()) {
             throw new AppException("Movie already exists.", HttpStatus.BAD_REQUEST);
         }
         // Save the movie to the database
@@ -47,11 +47,11 @@ public class MoviesService {
     }
 
     public MovieDetailsDto updateMovie(Long id, MovieDetailsDto updateMovieDto) {
-       // Get the movie from db
+        // Get the movie from db
         Movie dbMovie = movieRepository.findById(id)
                 .orElseThrow(() -> new AppException("Movie not found.", HttpStatus.NOT_FOUND));
 
-        if(dbMovie != null){
+        if (dbMovie != null) {
             // Update the movie
             dbMovie = movieMapper.toMovie(updateMovieDto);
             // Save the movie to the database
@@ -66,10 +66,16 @@ public class MoviesService {
         // Get the movie from db
         Movie dbMovie = movieRepository.findById(id)
                 .orElseThrow(() -> new AppException("Movie not found.", HttpStatus.NOT_FOUND));
-        if(dbMovie != null){
+        if (dbMovie != null) {
             movieRepository.delete(dbMovie);
             return movieMapper.toMovieDetailsDto(dbMovie);
         }
         return null;
+    }
+
+    public MovieDetailsDto searchMovie(SearchRequestDto searchParam) {
+        Movie movie = movieRepository.findFirstByActorsNameIgnoreCaseOrDirectorsNameIgnoreCase(searchParam.getName(), searchParam.getName())
+                .orElseThrow(() -> new AppException("Movie not found.", HttpStatus.NOT_FOUND));
+        return movieMapper.toMovieDetailsDto(movie);
     }
 }
